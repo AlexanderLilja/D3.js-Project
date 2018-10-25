@@ -16,11 +16,7 @@ window.watchResize(() => {
             height: window.innerHeight,
             width: window.innerWidth,
             padding: 10,
-            node: {
-                background: 'yellow',
-                hover: '#B1E9C8',
-                multiplier: 15
-            },
+            multiplier: 15,
             border: {
                 color: '#2c3539',
                 size: 2
@@ -32,7 +28,8 @@ window.watchResize(() => {
                 weight: 600
             },
             distance: 10,
-            collision: 6
+            collision: 6,
+            colors: ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D', '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC', '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399', '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933', '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF']
         }
 
         //CONTAINERS
@@ -79,11 +76,11 @@ window.watchResize(() => {
         var simulation = d3.forceSimulation(nodes)
             .force("charge", d3.forceManyBody().strength(-40))
             .force("center", d3.forceCenter(settings.width / 2, settings.height / 2))
-            .force("collision", d3.forceCollide().radius(settings.collision * settings.node.multiplier))
+            .force("collision", d3.forceCollide().radius(settings.collision * settings.multiplier))
             .force("link", d3.forceLink().id((d) => {
                     return d.id;
                 })
-                .distance(settings.distance * settings.node.multiplier))
+                .distance(settings.distance * settings.multiplier))
 
             //RENDER SIMULATION
             .on("tick", ticked)
@@ -92,7 +89,6 @@ window.watchResize(() => {
         // VARIABLES TO STORE SPECIFIC ELEMENTS       
         var link = canvas.append("g").attr("class", "links").selectAll("link"),
             node = canvas.append("g").attr("class", "node").selectAll("node"),
-            label = canvas.append("g").attr("class", "labels").selectAll("rect"),
             text = canvas.append("g").attr("class", "text").selectAll("text");
 
         //USING FORCE PROPERTIES ON LINKS AND NODES
@@ -107,10 +103,6 @@ window.watchResize(() => {
         node = node.data(nodes)
             .enter().append("circle");
 
-        //Append labels to each entry
-        label = label.data(nodes)
-            .enter().append("rect");
-
         //Append text to each entry
         text = text.data(nodes)
             .enter().append("text");
@@ -118,6 +110,9 @@ window.watchResize(() => {
         //Draw the links and nodes etc
         function ticked() {
 
+        //USING FORCE PROPERTIES ON LINKS AND NODES
+        simulation.nodes(nodes)
+        simulation.force("link").links(links);
 
             //Properties for links
             link.attr("x1", (d) => {
@@ -139,7 +134,7 @@ window.watchResize(() => {
 
             //Properties for nodes    
             node.attr('r', (d) => {
-                    return d.friends * settings.node.multiplier
+                    return d.friends * settings.multiplier
                 })
                 .attr('cx', (d) => {
                     return d.x;
@@ -149,11 +144,10 @@ window.watchResize(() => {
                 })
                 .attr("stroke", settings.border.color)
                 .attr("stroke-width", settings.border.size)
-                .attr("fill", settings.node.background)
+                .attr("fill", (d, i) => { return settings.colors[i];})
 
                 // MOUSEOVER TOOLTIP PROPERTIES
                 .on('mouseover', function(d) {
-                    d3.select(this).attr('fill', settings.node.hover)
                     $('#tooltip').html(d.name + ' (' + d.friends + ')')
                     $('#tooltip').css('left', d3.event.pageX - ($('#tooltip').width() / 1.5) + 'px')
                     $('#tooltip').css('top', d3.event.pageY + 20 + 'px')
@@ -162,22 +156,8 @@ window.watchResize(() => {
 
                  // MOUSEOUT
                 .on('mouseout', function () {
-                    d3.select(this).attr('fill', settings.node.background)
                     $('#tooltip').css('opacity', 0)
                 })
-
-
-            //Properties for label
-            label.attr('x', (d) => {
-                    return d.x;
-                })
-                .attr('y', (d) => {
-                    return d.y;
-                })
-                .attr("width", 50)
-                .attr("height", 50)
-                .style("fill", "none")
-                .style("pointer-events", "none");
 
             //Properties for text
             text.attr('dx', (d) => {
