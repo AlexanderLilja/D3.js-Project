@@ -1,0 +1,26 @@
+@font-face {
+	font-family: 'Open Sans';
+	src: url('fonts/main.woff');
+}
+
+body {
+   font: 13px 'Open Sans', verdana;
+	color: #505050;
+	margin: 0px;
+	padding: 0px;
+}
+
+#tooltip {
+   background: black;
+   font: 13px 'Open Sans', verdana;
+   color: white;
+   padding: 6px 8px;
+   margin: 0px;
+   width: fit-content;
+   text-align: center;
+   border-radius: 4px;
+   position: absolute;
+   opacity: 0;
+   transition: .2s;
+   pointer-events: none;
+}

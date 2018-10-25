@@ -16,6 +16,8 @@
 			"friends": [{
 				"FriendId": 1
 			}, {
+				"FriendId": 3
+			}, {
 				"FriendId": 5
 			}, {
 				"FriendId": 6
